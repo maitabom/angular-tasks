@@ -4,14 +4,16 @@ import {
   ElementRef,
   EventEmitter,
   inject,
+  Input,
   Output,
   ViewChild,
 } from '@angular/core';
 import { ListItems } from '../../interfaces/listitens.interface';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-input-add-item',
-  imports: [],
+  imports: [NgClass],
   templateUrl: './input-add-item.component.html',
   styleUrl: './input-add-item.component.scss',
 })
@@ -20,6 +22,9 @@ export class InputAddItemComponent {
 
   @ViewChild('inputText')
   public inputText!: ElementRef;
+
+  @Input({ required: true })
+  public inputListItems: ListItems[] = [];
 
   @Output()
   public outputAddListItems = new EventEmitter<ListItems>();
