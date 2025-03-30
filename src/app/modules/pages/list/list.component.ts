@@ -1,4 +1,5 @@
 import { Component, signal } from '@angular/core';
+import Swal from 'sweetalert2';
 import { InputAddItemComponent } from '../../components/input-add-item/input-add-item.component';
 import { ListItems } from '../../interfaces/listitens.interface';
 import { InputListItemComponent } from '../../components/input-list-item/input-list-item.component';
@@ -39,8 +40,19 @@ export class ListComponent {
   }
 
   public deleteAllItems() {
-    localStorage.removeItem(LocalStorage.MY_LIST);
-    return this.#setListItems.set(this.#parseItems());
+    Swal.fire({
+      title: 'Tem certeza',
+      text: 'Você não poderá reverter isso',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sim, delete tudo',
+      cancelButtonText: 'Não'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        localStorage.removeItem(LocalStorage.MY_LIST);
+        return this.#setListItems.set(this.#parseItems());
+      }
+    });
   }
 
   public listItemsStage(value: 'pending' | 'completed') {
