@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { InputAddItemComponent } from '../../components/input-add-item/input-add-item.component';
 import { ListItems } from '../../interfaces/listitens.interface';
 import { InputListItemComponent } from '../../components/input-list-item/input-list-item.component';
+import { LocalStorage } from '../../enums/localstorage.enum';
 
 type ItemCheckbox = { checked: boolean; id: string };
 type ItemText = { id: string; value: string };
@@ -15,16 +16,22 @@ type ItemText = { id: string; value: string };
 export class ListComponent {
   public addItem = signal(true);
 
+  #refreshStorage = () =>
+    localStorage.setItem(
+      LocalStorage.MY_LIST,
+      JSON.stringify(this.#setListItems())
+    );
+
   #setListItems = signal<ListItems[]>(this.#parseItems());
   public getListItems = this.#setListItems.asReadonly();
 
   #parseItems() {
-    return JSON.parse(localStorage.getItem('@my-list') || '[]');
+    return JSON.parse(localStorage.getItem(LocalStorage.MY_LIST) || '[]');
   }
 
   public getInputAddItem(value: ListItems) {
     localStorage.setItem(
-      '@my-list',
+      LocalStorage.MY_LIST,
       JSON.stringify([...this.#setListItems(), value])
     );
 
@@ -32,7 +39,7 @@ export class ListComponent {
   }
 
   public deleteAllItems() {
-    localStorage.removeItem('@my-list');
+    localStorage.removeItem(LocalStorage.MY_LIST);
     return this.#setListItems.set(this.#parseItems());
   }
 
@@ -64,10 +71,7 @@ export class ListComponent {
       return oldValue;
     });
 
-    return localStorage.setItem(
-      '@my-list',
-      JSON.stringify(this.#setListItems())
-    );
+    return this.#refreshStorage();
   }
 
   public updateItemText(item: ItemText) {
@@ -84,10 +88,7 @@ export class ListComponent {
       return oldValue;
     });
 
-    return localStorage.setItem(
-      '@my-list',
-      JSON.stringify(this.#setListItems())
-    );
+    return this.#refreshStorage();
   }
 
   public deleteItem(id: string) {
@@ -95,9 +96,6 @@ export class ListComponent {
       return oldValue.filter((resource) => resource.id !== id);
     });
 
-    return localStorage.setItem(
-      '@my-list',
-      JSON.stringify(this.#setListItems())
-    );
+    return this.#refreshStorage();
   }
 }
