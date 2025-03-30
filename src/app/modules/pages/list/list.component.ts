@@ -4,6 +4,7 @@ import { ListItems } from '../../interfaces/listitens.interface';
 import { InputListItemComponent } from '../../components/input-list-item/input-list-item.component';
 
 type ItemCheckbox = { checked: boolean; id: string };
+type ItemText = { id: string; value: string };
 
 @Component({
   selector: 'app-list',
@@ -60,9 +61,32 @@ export class ListComponent {
         return resource;
       });
 
-      return oldValue
+      return oldValue;
     });
 
-    return localStorage.setItem('@my-list', JSON.stringify(this.#setListItems()));
+    return localStorage.setItem(
+      '@my-list',
+      JSON.stringify(this.#setListItems())
+    );
+  }
+
+  public updateItemText(item: ItemText) {
+    this.#setListItems.update((oldValue: ListItems[]) => {
+      oldValue.filter((resource) => {
+        if (resource.id === item.id) {
+          resource.value = item.value;
+          return resource;
+        }
+
+        return resource;
+      });
+
+      return oldValue;
+    });
+
+    return localStorage.setItem(
+      '@my-list',
+      JSON.stringify(this.#setListItems())
+    );
   }
 }
